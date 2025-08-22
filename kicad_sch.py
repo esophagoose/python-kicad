@@ -6,7 +6,7 @@ from pydantic import BaseModel, BeforeValidator, Field, model_validator
 ColorType = tuple[int, int, int, int]
 
 
-def _get_points(points: list) -> "Points":
+def _get_points(points: list) -> List['Point']:
     return points["xys"]
 
 
@@ -104,7 +104,7 @@ class Fill(BaseModel):
 
 
 class Polyline(BaseModel):
-    points: Annotated[Points, BeforeValidator(_get_points)]
+    points: Annotated[List[Point], BeforeValidator(_get_points)] = Field(alias="pts")
     stroke: Stroke
     fill: Fill
     uuid: Optional[str] = None
