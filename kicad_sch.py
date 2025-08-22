@@ -3,19 +3,18 @@ from pydantic import BaseModel, Field, BeforeValidator, model_validator
 from typing import Optional, List, Any, Union, Dict, Annotated
 from enum import Enum
 from simp_sexp import Sexp
+from collections import Counter
 
 def _sexp_to_dict(sexp: list) -> dict:
     field = {}
-    if not any(isinstance(s, list) for s in sexp):
-        return {sexp[0]: sexp[1:]}
     for param in sexp:
         field[param[0]] = param[1:]
         if len(param) == 2:
             field[param[0]] = param[1]
     return field
 
-def _sexp_points(points: list) -> 'Points':
-    return Points(points=[Point(x=p[1], y=p[2]) for p in points])
+def _get_points(points: list) -> 'Points':
+    return points['xys']
 
 
 class BaseSexpModel(BaseModel):
@@ -31,12 +30,14 @@ class BaseListModel(BaseModel):
         var_names = cls.model_json_schema()['properties'].keys()
         return dict(zip(var_names, data))
     
-class NamedSexpModel(BaseModel):
+class NamedModel(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def convert(cls, data: list) -> Any:
-        data[0] = ["name", data[0]]
-        return _sexp_to_dict(data)
+        name = list(data.keys())[0]
+        content = data[name]
+        content.update({'name': name})
+        return content
 
 class StrokeType(str, Enum):
     DEFAULT = "default"
@@ -90,6 +91,11 @@ class Point(BaseModel):
     x: float
     y: float
 
+    @model_validator(mode='before')
+    @classmethod
+    def convert(cls, data: Any) -> Any:
+        return {'x': data[0], 'y': data[1]}
+
 
 class Points(BaseModel):
     points: List[Point]
@@ -105,7 +111,7 @@ class Fill(BaseModel):
 
 
 class Polyline(BaseModel):
-    points: Annotated[Points, BeforeValidator(_sexp_points)]
+    points: Annotated[Points, BeforeValidator(_get_points)]
     stroke: Stroke
     fill: Fill
     uuid: Optional[str] = None
@@ -168,8 +174,8 @@ class SymbolUnit(BaseModel):
         return _sexp_to_dict(data)
 
 
-class LibrarySymbol(BaseModel):
-    library: str
+class LibrarySymbol(NamedModel):
+    library: str = Field(alias="name")
     pin_numbers: Optional[Union[str, dict]] = None
     pin_names: Optional[Union[str, dict]] = None
     exclude_from_sim: Optional[str] = None
@@ -178,16 +184,9 @@ class LibrarySymbol(BaseModel):
     property: Optional[List[Property]] = None
     symbol: Optional[SymbolUnit] = None
 
-    @model_validator(mode='before')
-    @classmethod
-    def convert(cls, data: list) -> dict:
-        data = data[1:]
-        data[0] = ["library", data[0]]
-        return _sexp_to_dict(data)
-
 class Wire(BaseModel):
-    points: Annotated[Points, BeforeValidator(_sexp_points)] = Field(alias="pts")
-    stroke: Annotated[Stroke, BeforeValidator(_sexp_to_dict)]
+    points: Annotated[List[Point], BeforeValidator(_get_points)] = Field(alias="pts")
+    stroke: Stroke
     uuid: Optional[str] = None
 
 
@@ -220,13 +219,13 @@ class TitleBlock(BaseModel):
     date: Optional[str] = None
     rev: Optional[str] = None
     company: Optional[str] = None
-    comment: Optional[List[dict]] = None
+    comments: Optional[List[Any]] = None
 
 
 class Paper(BaseModel):
     size: str
 
-class Label(NamedSexpModel):
+class Label(NamedModel):
     name: str
     shape: Optional[str] = None
     at: Position
@@ -241,154 +240,68 @@ class Schematic(BaseModel):
     uuid: str
     paper: str
     title_block: Optional[TitleBlock] = None
-    symbol: Optional[List[SchematicSymbol]] = None
-    wires: List[Wire]
-    junctions: List[Junction]
+    lib_symbols: Optional[Annotated[List[LibrarySymbol], BeforeValidator(lambda x: x['symbols'])]] = None
+    # symbol: Optional[List[SchematicSymbol]] = None
+    wires: Optional[List[Wire]] = None
+    junctions: Optional[List[Junction]] = None
     polyline: Optional[List[Polyline]] = None
     text: Optional[List[Text]] = None
     global_labels: List[Label] = []
     hierarchical_labels: List[Label] = []
     labels: List[Label] = []
-    sheet_instances: Optional[List[Any]] = None
-    lib_symbols: List[LibrarySymbol] = []
+    sheet_instances: Optional[Any] = None
 
+def _parse_all_strings(sexp: List) -> Dict:
+    if isinstance(sexp[0], (int, float)):
+        return sexp
+    if len(sexp) == 1:
+        return sexp[0]
+    if len(sexp) == 2:
+        return {sexp[0]: sexp[1]}
+    return {sexp[0]: sexp[1:]}
 
-def parse_sexp_to_dict(sexp_list: List) -> Dict:
-    """Convert S-expression list to dictionary format"""
-    if not isinstance(sexp_list, list):
-        return sexp_list
+def parse(sexp: List) -> Dict:
+    if "hide" in sexp:
+        i = sexp.index("hide")
+        if len(sexp) <= i + 1 or sexp[i+1] not in ["yes", "no"]:
+            sexp[i] = ["hide", "yes"]
+    for i, item in enumerate(sexp):
+        if isinstance(item, list) and len(item) == 1:
+            sexp[i] = item[0]
+    is_list_items = [isinstance(s, list) for s in sexp]
+    try:
+        first = next(i for i, x in enumerate(is_list_items) if x)
+    except StopIteration:
+        first = None
     
-    if len(sexp_list) == 0:
-        return {}
-    
-    if len(sexp_list) == 1:
-        return sexp_list[0]
-    
-    result = {}
-    i = 0
-    
-    while i < len(sexp_list):
-        item = sexp_list[i]
-        
-        if isinstance(item, str):
-            key = item
-            # Check if there's a next item
-            if i + 1 < len(sexp_list):
-                next_item = sexp_list[i + 1]
-                if isinstance(next_item, list):
-                    # Parse nested structure
-                    parsed_value = parse_sexp_to_dict(next_item)
-                    if key in result:
-                        if not isinstance(result[key], list):
-                            result[key] = [result[key]]
-                        result[key].append(parsed_value)
-                    else:
-                        result[key] = parsed_value
-                    i += 2
-                else:
-                    # Simple value
-                    result[key] = next_item
-                    i += 2
+    if isinstance(sexp, (int, float, str)):
+        return sexp
+    elif not any(is_list_items):
+        return _parse_all_strings(sexp)
+    elif not is_list_items[0] and all(is_list_items[1:]):
+        return {sexp[0]: parse(sexp[1:])}
+    elif first is not None and first > 1 and all(is_list_items[first:]):
+        for i, item in enumerate(sexp[1:]):
+            if isinstance(item, str):
+                sexp[i+1] = ["_required", item]
+        return {sexp[0]: parse(sexp[1:])}
+    elif all(is_list_items):
+        result = {}
+        names = Counter([s[0] for s in sexp])
+        for i, item in enumerate(sexp):
+            is_list_item = [isinstance(s, list) for s in item]
+            if names[item[0]] > 1:
+                name = item[0] + "s"
+                if name not in result:
+                    result[name] = []
+                result[name].append(parse(item[1:]))
+            elif not any(is_list_item):
+                result.update(_parse_all_strings(item))
             else:
-                # Key without value
-                result[key] = True
-                i += 1
-        elif isinstance(item, list):
-            # Nested list without key - parse it recursively
-            return parse_sexp_to_dict(item)
-        else:
-            i += 1
-    
-    return result
+                result.update(parse(item))
+        return result
+    raise ValueError("Invalid sexp to parse: ", sexp)
 
-
-def parse_simple_sexp(sexp_list: List) -> Dict:
-    """Simple S-expression parser for KiCad format"""
-    if not isinstance(sexp_list, list):
-        return sexp_list
-    
-    if len(sexp_list) == 0:
-        return {}
-    
-    if len(sexp_list) == 1:
-        return sexp_list[0]
-    
-    result = {}
-    i = 0
-    
-    while i < len(sexp_list):
-        item = sexp_list[i]
-        
-        if isinstance(item, str):
-            key = item
-            # Check if there's a next item
-            if i + 1 < len(sexp_list):
-                next_item = sexp_list[i + 1]
-                if isinstance(next_item, list):
-                    # Parse nested structure
-                    parsed_value = parse_simple_sexp(next_item)
-                    result[key] = parsed_value
-                    i += 2
-                else:
-                    # Check if there are more values after this one
-                    values = [next_item]
-                    j = i + 2
-                    while j < len(sexp_list) and not isinstance(sexp_list[j], str):
-                        values.append(sexp_list[j])
-                        j += 1
-                    
-                    if len(values) == 1:
-                        result[key] = values[0]
-                    else:
-                        result[key] = values
-                    i = j
-            else:
-                # Key without value
-                result[key] = True
-                i += 1
-        elif isinstance(item, list):
-            # Nested list without key - parse it recursively
-            return parse_simple_sexp(item)
-        else:
-            i += 1
-    
-    return result
-
-
-def parse_sexp_to_dict(sexp_list: List) -> Dict:
-    """Convert S-expression list to dictionary format"""
-    if not isinstance(sexp_list, list):
-        return sexp_list
-    
-    if len(sexp_list) == 0:
-        return {}
-    
-    if len(sexp_list) == 1:
-        return sexp_list[0]
-    
-    result = {}
-    current_key = None
-    
-    for item in sexp_list:
-        if isinstance(item, str) and not current_key:
-            current_key = item
-        elif isinstance(item, list):
-            if current_key:
-                if current_key in result:
-                    if not isinstance(result[current_key], list):
-                        result[current_key] = [result[current_key]]
-                    result[current_key].append(parse_sexp_to_dict(item))
-                else:
-                    result[current_key] = parse_sexp_to_dict(item)
-                current_key = None
-            else:
-                return parse_sexp_to_dict(item)
-        else:
-            if current_key:
-                result[current_key] = item
-                current_key = None
-    
-    return result
 
 def parse_kicad_sch(content: str) -> Schematic:
     """
@@ -396,121 +309,13 @@ def parse_kicad_sch(content: str) -> Schematic:
     """
     # Parse the S-expression content
     sexp = Sexp(content)
-    sexp_list = list(sexp)
     
-    if not sexp_list or sexp_list[0] != "kicad_sch":
+    if not sexp or sexp[0] != "kicad_sch":
         raise ValueError("Invalid KiCad schematic file")
-    
-    # The sexp_list is a flat list where each element is a separate S-expression
-    # We need to parse each one individually
-    data = {}
-    
-    for item in sexp_list[1:]:  # Skip the first "kicad_sch" element
-        if isinstance(item, list) and len(item) >= 1:
-            key, value = item[0], item[1:]
-            if len(item) == 2:
-                # Simple key-value pair
-                data[key] = value[0]
-            elif key == "lib_symbols":
-                # Special handling for lib_symbols - it contains multiple symbol definitions
-                # data[key] = value
-                continue
-                symbols = []
-                for sub_item in item[1:]:
-                    if isinstance(sub_item, list) and len(sub_item) >= 2 and sub_item[0] == "symbol":
-                        symbol_name = sub_item[1]
-                        symbol_data = parse_simple_sexp(sub_item[2:])
-                        if isinstance(symbol_data, dict):
-                            symbol_data["name"] = symbol_name  # Add the symbol name
-                            symbols.append(symbol_data)
-                        else:
-                            # Handle case where symbol_data is not a dict
-                            symbols.append({"name": symbol_name, "data": symbol_data})
-                data[key] = {"symbol": symbols}
-            elif key in ["junction", "wire", "polyline", "text"]:
-                key += "s"
-                field = {}
-                for param in value:
-                    field[param[0]] = param[1:]
-                    if len(param) == 2:
-                        field[param[0]] = param[1]
-                if key not in data:
-                    data[key] = []
-                data[key].append(field)
-            elif key in ["global_label", "hierarchical_label", "label"]:
-                key += "s"
-                if key not in data:
-                    data[key] = []
-                data[key].append(value)
-            else:
-                # data[key] = value
-                continue
-                # Complex structure
-                parsed_item = parse_simple_sexp(item[1:])
-                if key in data:
-                    # If key already exists, make it a list
-                    if not isinstance(data[key], list):
-                        data[key] = [data[key]]
-                    data[key].append(parsed_item)
-                else:
-                    data[key] = parsed_item
+    # assert Schematic(**parse(sexp[:7]).get("kicad_sch")) == Schematic(version=20231120, generator='eeschema', generator_version='8.0', uuid='5ad56ace-e9ba-4651-b929-73675fdbc4ee', paper='USLetter', title_block=TitleBlock(title='Castor & Pollux', date='2022-10-07', rev='v6', company='Winterbloom', comments=[{1: 'Alethea Flowers'}, {2: 'CERN-OHL-P v2'}, {3: 'gemini.wntr.dev'}])), "Base case is broken!"
+    print("  Base case is passed  ".upper().center(80, "="))
+    print()
 
-    names = set()
-    for i, s in enumerate(sexp_list):
-        if isinstance(s, list):
-            names.add(s[0])
-    print(names)
-    print("="*100)
-
-    schematic = Schematic(**data)
-    import code
-    code.interact(local=locals())
-    
-    # Parse title block
-    if "title_block" in data:
-        tb_data = data["title_block"]
-        schematic.title_block = TitleBlock(
-            title=tb_data.get("title"),
-            date=tb_data.get("date"),
-            rev=tb_data.get("rev"),
-            company=tb_data.get("company"),
-            comment=tb_data.get("comment")
-        )
-    
-    # Parse library symbols
-    if "lib_symbols" in data:
-        lib_symbols = []
-        lib_symbols_data = data["lib_symbols"]
-        
-        # lib_symbols contains a list of symbol definitions
-        if isinstance(lib_symbols_data, dict) and "symbol" in lib_symbols_data:
-            symbol_list = lib_symbols_data["symbol"]
-            if not isinstance(symbol_list, list):
-                symbol_list = [symbol_list]
-            
-            for symbol_data in symbol_list:
-                if isinstance(symbol_data, dict):
-                    lib_symbol = LibrarySymbol(
-                        name=symbol_data.get("name", ""),
-                        pin_numbers=symbol_data.get("pin_numbers"),
-                        pin_names=symbol_data.get("pin_names"),
-                        exclude_from_sim=symbol_data.get("exclude_from_sim"),
-                        in_bom=symbol_data.get("in_bom"),
-                        on_board=symbol_data.get("on_board")
-                    )
-                    
-                    # Parse properties
-                    if "property" in symbol_data:
-                        properties = []
-                        prop_list = symbol_data["property"]
-                        if not isinstance(prop_list, list):
-                            prop_list = [prop_list]
-                        for prop_data in prop_list:
-                            if isinstance(prop_data, dict):
-                                properties.append(parse_property(prop_data))
-                        lib_symbol.property = properties
-                    
-                    lib_symbols.append(lib_symbol)
-        
-        schematic.lib_symbols = lib_symbols
+    parsed = parse(sexp)
+    schematic = Schematic(**parsed.get("kicad_sch"))
     return schematic

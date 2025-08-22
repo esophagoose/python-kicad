@@ -12,9 +12,14 @@ def main():
     print(f"Generator: {schematic.generator}")
     print(f"Generator Version: {schematic.generator_version}")
     print(f"UUID: {schematic.uuid}")
+    print(f"Paper Size: {schematic.paper}")
+
+    assert schematic.version == 20231120
+    assert schematic.generator == "eeschema"
+    assert schematic.generator_version == "8.0"
+    assert schematic.uuid == "5ad56ace-e9ba-4651-b929-73675fdbc4ee"
+    assert schematic.paper == "USLetter"
     
-    if schematic.paper:
-        print(f"Paper Size: {schematic.paper}")
     
     if schematic.title_block:
         print(f"Title: {schematic.title_block.title}")
@@ -44,7 +49,7 @@ def main():
     if schematic.lib_symbols and len(schematic.lib_symbols) > 0:
         print(f"\nLibrary Symbol Examples:")
         for i, lib_symbol in enumerate(schematic.lib_symbols[:3]):  # Show first 3
-            print(f"  {i+1}. {lib_symbol.name}")
+            print(f"  {i+1}. {lib_symbol.library}")
             print(f"     pin_numbers: {lib_symbol.pin_numbers}")
             print(f"     exclude_from_sim: {lib_symbol.exclude_from_sim}")
             print(f"     in_bom: {lib_symbol.in_bom}")
@@ -58,7 +63,7 @@ def main():
         print(f"Wire Examples:")
         for i, wire in enumerate(schematic.wires[:3]):  # Show first 3
             print(f"  {i+1}. UUID: {wire.uuid}")
-            print(f"     Points: {len(wire.points.points)}")
+            print(f"     Points: {len(wire.points)}")
             print(f"     Stroke width: {wire.stroke.width}")
             print(f"     Stroke type: {wire.stroke.type}")
             print()
