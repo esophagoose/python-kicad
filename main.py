@@ -7,28 +7,44 @@ import kicad_sch as sch_types
 
 
 def _parse_all_strings(sexp: List) -> Dict:
+    # If all items are not lists, return them
+    # If list starts with a number, it's meant to be an array. Just return it.
     if isinstance(sexp[0], (int, float)):
         return sexp
+    # Single value lists can be returned as the value
     if len(sexp) == 1:
         return sexp[0]
+    # Two value lists can be returned as a key-value pair
     if len(sexp) == 2:
         return {sexp[0]: sexp[1]}
+    # Many length lists return a key-value pair
     return {sexp[0]: sexp[1:]}
 
+def _normalized_bools(sexp: List) -> List:
+    # Some booleans are default False and True if the name is present
+    # Other booleans have the subsequent value be yes or no
+    # This function normalizes to yes or no to work with the parser
+    BOOLEANS = ['hide']
+    for boolean in BOOLEANS:
+        if boolean in sexp:
+            i = sexp.index(boolean)
+            if len(sexp) <= i + 1 or sexp[i + 1] not in ["yes", "no"]:
+                sexp[i] = [boolean, "yes"]
+    return sexp
 
-def parse(sexp: List) -> Dict:
-    if "hide" in sexp:
-        i = sexp.index("hide")
-        if len(sexp) <= i + 1 or sexp[i + 1] not in ["yes", "no"]:
-            sexp[i] = ["hide", "yes"]
+def _strip_single_element_lists(sexp: List) -> List:
+    # Parser will sometimes have a single element list (ex: ["value"])
+    # This function strips them to their value (ex: "value")
     for i, item in enumerate(sexp):
         if isinstance(item, list) and len(item) == 1:
             sexp[i] = item[0]
+    return sexp
+
+def parse(sexp: List) -> Dict:
+    sexp = _normalized_bools(sexp)
+    sexp = _strip_single_element_lists(sexp)
     is_list_items = [isinstance(s, list) for s in sexp]
-    try:
-        first = next(i for i, x in enumerate(is_list_items) if x)
-    except StopIteration:
-        first = None
+    first = is_list_items.index(True) if True in is_list_items else None
 
     if isinstance(sexp, (int, float, str)):
         return sexp

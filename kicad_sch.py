@@ -2,7 +2,6 @@ from enum import Enum
 from typing import Annotated, Any, List, Optional, Union
 
 from pydantic import BaseModel, BeforeValidator, Field, model_validator
-from simp_sexp import Sexp
 
 ColorType = tuple[int, int, int, int]
 
