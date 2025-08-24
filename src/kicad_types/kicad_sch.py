@@ -6,7 +6,7 @@ from pydantic import BaseModel, BeforeValidator, Field, model_validator
 ColorType = tuple[int, int, int, int]
 
 
-def _get_points(points: list) -> List['Point']:
+def _get_points(points: list) -> List["Point"]:
     return points["xys"]
 
 
@@ -220,12 +220,12 @@ class Schematic(BaseModel):
     title_block: Optional[TitleBlock] = None
     lib_symbols: Optional[
         Annotated[List[LibrarySymbol], BeforeValidator(lambda x: x["symbols"])]
-    ] = None
-    symbols: Optional[List[SchematicSymbol]] = None
-    wires: Optional[List[Wire]] = None
-    junctions: Optional[List[Junction]] = None
-    polyline: Optional[List[Polyline]] = None
-    text: Optional[List[Text]] = None
+    ] = []
+    symbols: Optional[List[SchematicSymbol]] = []
+    wires: Optional[List[Wire]] = []
+    junctions: Optional[List[Junction]] = []
+    polyline: Optional[List[Polyline]] = []
+    text: Optional[List[Text]] = []
     global_labels: List[Label] = []
     hierarchical_labels: List[Label] = []
     labels: List[Label] = []

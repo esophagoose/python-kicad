@@ -210,3 +210,4 @@ __marimo__/
 uv.lock
 .python-version
 testdata/
+.DS_Store
