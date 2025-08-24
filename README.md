@@ -1,2 +1,7 @@
-# pykicad
-Python Library for Interacting With KiCad files
+# Python KiCad
+
+A Python library for parsing and interacting with KiCad schematic files (.kicad_sch).
+
+
+
+
