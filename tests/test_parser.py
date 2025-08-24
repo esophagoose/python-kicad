@@ -1,6 +1,6 @@
 import pytest
 
-from src.parser.kicad_sexp import (_normalized_bools, _parse_all_strings,
+from pykicad.parser.kicad_sexp import (_normalized_bools, _parse_all_strings,
                                    _strip_single_element_lists, parse_sexp,
                                    read_in_schematic_from_kicad_sch)
 
@@ -151,11 +151,11 @@ class TestParseKiCadSch:
         schematic = read_in_schematic_from_kicad_sch("testdata/sample.kicad_sch")
 
         # Test basic properties
-        assert schematic.version == 20231120
+        assert schematic.version == 20250824
         assert schematic.generator == "eeschema"
         assert schematic.generator_version == "8.0"
-        assert schematic.uuid == "5ad56ace-e9ba-4651-b929-73675fdbc4ee"
-        assert schematic.paper == "USLetter"
+        assert schematic.uuid == "11111111-1111-1111-1111-111111111111"
+        assert schematic.paper == "A4"
 
     def test_wires_parsing(self):
         """Test that wires are properly parsed"""

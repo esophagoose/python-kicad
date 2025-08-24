@@ -1,0 +1,551 @@
+(kicad_sch
+	(version 20250824)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "11111111-1111-1111-1111-111111111111")
+	(paper "A4")
+	(title_block
+		(title "Sample Schematic")
+		(date "2025-01-01")
+		(rev "v1.0")
+		(company "Sample Company")
+		(comment 1 "Comment line 1")
+		(comment 2 "Comment line 2")
+		(comment 3 "Comment line 3")
+		(comment 4 "Comment line 4")
+	)
+	(lib_symbols
+		(symbol "Device:R"
+			(pin_numbers hide)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "R"
+				(at 2.032 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R"
+				(at 0 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.778 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "R_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "Device:C"
+			(pin_numbers hide)
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "C"
+				(at 0.635 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "C"
+				(at 0.635 -2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0.9652 -3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Unpolarized capacitor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "C_0_1"
+				(polyline
+					(pts
+						(xy -2.032 -0.762) (xy 2.032 -0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.032 0.762) (xy 2.032 0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "C_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 2.794)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.794)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+	(junction
+		(at 100 100)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+	)
+	(junction
+		(at 120 120)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+	)
+	(wire
+		(pts
+			(xy 80 80) (xy 100 80)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cccccccc-cccc-cccc-cccc-cccccccccccc")
+	)
+	(wire
+		(pts
+			(xy 100 80) (xy 120 80)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dddddddd-dddd-dddd-dddd-dddddddddddd")
+	)
+	(polyline
+		(pts
+			(xy 50 50) (xy 150 50)
+		)
+		(stroke
+			(width 0.254)
+			(type solid)
+		)
+		(uuid "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee")
+	)
+	(polyline
+		(pts
+			(xy 50 50) (xy 50 150)
+		)
+		(stroke
+			(width 0.254)
+			(type solid)
+		)
+		(uuid "ffffffff-ffff-ffff-ffff-ffffffffffff")
+	)
+	(text "Sample Text"
+		(exclude_from_sim no)
+		(at 80 60 0)
+		(effects
+			(font
+				(size 2.54 2.54)
+				(thickness 0.508)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "12345678-1234-1234-1234-123456789012")
+	)
+	(text "More sample text with\nmultiple lines"
+		(exclude_from_sim no)
+		(at 60 140 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "23456789-2345-2345-2345-234567890123")
+	)
+	(label "SIGNAL_A"
+		(at 80 80 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "34567890-3456-3456-3456-345678901234")
+	)
+	(label "SIGNAL_B"
+		(at 120 80 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "45678901-4567-4567-4567-456789012345")
+	)
+	(global_label "VCC"
+		(shape input)
+		(at 100 60 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "56789012-5678-5678-5678-567890123456")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 100 54.0582 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape input)
+		(at 100 140 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "67890123-6789-6789-6789-678901234567")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 100 145.9418 270)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(hierarchical_label "OUTPUT_A"
+		(shape output)
+		(at 160 80 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "78901234-7890-7890-7890-789012345678")
+	)
+	(hierarchical_label "INPUT_B"
+		(shape input)
+		(at 40 80 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "89012345-8901-8901-8901-890123456789")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 100 90 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "90123456-9012-9012-9012-901234567890")
+		(property "Reference" "R1"
+			(at 102.87 88.8999 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10k"
+			(at 102.87 91.4399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 98.044 90 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 100 90 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 100 90 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a0123456-a012-a012-a012-a01234567890")
+		)
+		(pin "2"
+			(uuid "b0123456-b012-b012-b012-b01234567890")
+		)
+		(instances
+			(project "sample"
+				(path "/11111111-1111-1111-1111-111111111111"
+					(reference "R1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 120 100 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "c0123456-c012-c012-c012-c01234567890")
+		(property "Reference" "C1"
+			(at 123.825 98.7299 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 123.825 101.2699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 120.9652 96.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 120 100 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 120 100 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d0123456-d012-d012-d012-d01234567890")
+		)
+		(pin "2"
+			(uuid "e0123456-e012-e012-e012-e01234567890")
+		)
+		(instances
+			(project "sample"
+				(path "/11111111-1111-1111-1111-111111111111"
+					(reference "C1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)

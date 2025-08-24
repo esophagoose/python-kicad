@@ -1,6 +1,6 @@
 import pytest
 
-from src.kicad_types.kicad_sch import (Effects, Fill, FillType, Font, FontSize,
+from pykicad.models.kicad_sch import (Effects, Fill, FillType, Font, FontSize,
                                        Junction, Justify, Label, LibrarySymbol,
                                        Pin, PinGraphic, PinType, Point, Points,
                                        Polyline, Position, Property, Rectangle,

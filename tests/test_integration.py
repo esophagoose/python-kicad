@@ -1,7 +1,7 @@
 import pytest
 
-from src.kicad_types.kicad_sch import Schematic
-from src.parser.kicad_sexp import (read_in_schematic_from_kicad_sch,
+from pykicad.models.kicad_sch import Schematic
+from pykicad.parser.kicad_sexp import (read_in_schematic_from_kicad_sch,
                                    read_in_schematic_from_string)
 
 
@@ -23,11 +23,11 @@ class TestIntegration:
         assert isinstance(schematic.paper, str)
 
         # Test specific values from the sample file
-        assert schematic.version == 20231120, "Wrong version"
+        assert schematic.version == 20250824, "Wrong version"
         assert schematic.generator == "eeschema", "Wrong generator"
         assert schematic.generator_version == "8.0", "Wrong generator version"
-        assert schematic.uuid == "5ad56ace-e9ba-4651-b929-73675fdbc4ee", "Wrong UUID"
-        assert schematic.paper == "USLetter", "Wrong paper"
+        assert schematic.uuid == "11111111-1111-1111-1111-111111111111", "Wrong UUID"
+        assert schematic.paper == "A4", "Wrong paper"
 
     def test_error_handling_invalid_content(self):
         """Test error handling with invalid content"""

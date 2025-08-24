@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from simp_sexp import Sexp
 
-import kicad_types.kicad_sch as sch_types
+import pykicad.models.kicad_sch as sch_types
 
 
 def _parse_all_strings(sexp: List) -> Dict:

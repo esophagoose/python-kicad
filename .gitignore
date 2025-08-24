@@ -209,5 +209,5 @@ __marimo__/
 # uv
 uv.lock
 .python-version
-testdata/
+examples/
 .DS_Store
