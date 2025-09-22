@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Annotated, Any, List, Optional, Union
+from typing import Annotated, Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, BeforeValidator, Field, model_validator
 
@@ -7,7 +7,25 @@ ColorType = tuple[int, int, int, int]
 
 
 def _get_points(points: list) -> List["Point"]:
-    return points["xys"]
+    print(points)
+    return points["xy"]
+
+def _get_required(prop: Dict[str, str]) -> str:
+    return prop["_required"]
+
+def _get_property(prop: Dict[str, Dict[str, str]]) -> Dict[str, str]:
+    key = list(prop.keys())[0]
+    return {
+        "name": key,
+        "value": prop[key]["_required"],
+        "at": prop[key]["at"],
+        "effects": prop[key]["effects"],
+    }
+
+def _correct_dict(symbol: Dict[str, Dict[str, str]]) -> Dict[str, str]:
+    key = list(symbol.keys())[0]
+    symbol[key]["key"] = key
+    return symbol[key]
 
 
 class BaseListModel(BaseModel):
@@ -130,38 +148,37 @@ class PinType(str, Enum):
 class Property(BaseModel):
     name: str
     value: str
-    at: str
+    at: Position
     effects: Optional[Effects] = None
 
 
 class Pin(BaseModel):
-    type: PinType
-    line: PinGraphic
+    type: PinType = Field(alias="key")
+    line: PinGraphic = Field(alias="_required")
     at: Position
     length: float
-    name: Property
-    number: Property
+    name: Annotated[str, BeforeValidator(_get_required)]
+    number: Annotated[str, BeforeValidator(_get_required)]
     effects: Optional[Effects] = None
     hide: Optional[bool] = None
 
 
 class SymbolUnit(BaseModel):
-    name: str
-    library: str
+    name: str = Field(alias="key")
     polyline: Optional[List[Polyline]] = None
-    rectangle: Optional[List[Rectangle]] = None
-    pin: Optional[Pin] = None
+    rectangle: Optional[Rectangle] = None
+    pins: List[Annotated[Pin, BeforeValidator(_correct_dict)]] = []
 
 
 class LibrarySymbol(NamedModel):
     library: str = Field(alias="name")
     pin_numbers: Optional[Union[str, dict]] = None
     pin_names: Optional[Union[str, dict]] = None
-    exclude_from_sim: Optional[str] = None
-    in_bom: Optional[str] = None
-    on_board: Optional[str] = None
-    property: Optional[List[Property]] = None
-    symbol: Optional[SymbolUnit] = None
+    exclude_from_sim: Optional[bool] = None
+    in_bom: Optional[bool] = None
+    on_board: Optional[bool] = None
+    properties: List[Annotated[Property, BeforeValidator(_get_property)]] = []
+    symbols: List[Annotated[SymbolUnit, BeforeValidator(_correct_dict)]] = []
 
 
 class Wire(BaseModel):
@@ -191,7 +208,7 @@ class SchematicSymbol(BaseModel):
     value: Optional[str] = None
     footprint: Optional[str] = None
     uuid: Optional[str] = None
-    property: Optional[List[Property]] = None
+    properties: List[Annotated[Property, BeforeValidator(_get_property)]] = []
 
 
 class TitleBlock(BaseModel):

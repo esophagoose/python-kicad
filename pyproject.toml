@@ -1,13 +1,21 @@
 [project]
 name = "pykicad"
 version = "0.1.0"
-description = "Add your description here"
+description = "Python library for KiCad Files"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.9"
 dependencies = [
     "simp_sexp>=0.3.0",
     "pydantic>=2.10.6",
 ]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["pykicad*"]
+exclude = ["tests*", "testdata*", "examples*"]
 
 [project.optional-dependencies]
 dev = [
@@ -52,6 +60,6 @@ exclude_lines = [
 
 [dependency-groups]
 dev = [
-    "pytest>=8.4.1",
+    "pytest>=7.0.0",
     "pytest-cov>=6.2.1",
 ]

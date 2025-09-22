@@ -6,6 +6,15 @@ from simp_sexp import Sexp
 import pykicad.models.kicad_sch as sch_types
 
 
+def _plural(word: str) -> str:
+    if word in ['xy']:
+        return word
+    if word.endswith("s"):
+        return word
+    if word.endswith("y"):
+        return word[:-1] + "ies"
+    return word + "s"
+
 def _parse_all_strings(sexp: List) -> Dict:
     # If all items are not lists, return them
     # If list starts with a number, it's meant to be an array. Just return it.
@@ -73,7 +82,7 @@ def parse_sexp(sexp: List) -> Dict:
         for i, item in enumerate(sexp):
             is_list_item = [isinstance(s, list) for s in item]
             if names[item[0]] > 1:
-                name = item[0] + "s"
+                name = _plural(item[0])
                 if name not in result:
                     result[name] = []
                 result[name].append(parse_sexp(item[1:]))

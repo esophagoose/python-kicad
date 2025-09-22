@@ -1,10 +1,5 @@
 from parser.kicad_sexp import read_in_schematic_from_kicad_sch
 
-from simp_sexp import Sexp
-
-import models.kicad_sch as sch_types
-
-
 def main():
     schematic = read_in_schematic_from_kicad_sch("testdata/sample.kicad_sch")
 
@@ -56,8 +51,8 @@ def main():
             print(f"     exclude_from_sim: {lib_symbol.exclude_from_sim}")
             print(f"     in_bom: {lib_symbol.in_bom}")
             print(f"     on_board: {lib_symbol.on_board}")
-            if lib_symbol.property:
-                print(f"     properties: {len(lib_symbol.property)}")
+            if lib_symbol.properties:
+                print(f"     properties: {len(lib_symbol.properties)}")
             print()
 
     # Show some wire details
@@ -90,7 +85,8 @@ def main():
             print(f"     Effects: {label.effects}")
             print(f"     UUID: {label.uuid}")
             print()
+    return schematic
 
 
 if __name__ == "__main__":
-    main()
+    sch = main()
