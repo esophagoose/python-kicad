@@ -165,7 +165,7 @@ class Pin(BaseModel):
 
 class SymbolUnit(BaseModel):
     name: str = Field(alias="key")
-    polyline: Optional[List[Polyline]] = None
+    polyline: Optional[Polyline] = None
     rectangle: Optional[Rectangle] = None
     pins: List[Annotated[Pin, BeforeValidator(_correct_dict)]] = []
 
