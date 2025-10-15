@@ -7,11 +7,12 @@ ColorType = tuple[int, int, int, int]
 
 
 def _get_points(points: list) -> List["Point"]:
-    print(points)
     return points["xy"]
+
 
 def _get_required(prop: Dict[str, str]) -> str:
     return prop["_required"]
+
 
 def _get_property(prop: Dict[str, Dict[str, str]]) -> Dict[str, str]:
     key = list(prop.keys())[0]
@@ -21,6 +22,7 @@ def _get_property(prop: Dict[str, Dict[str, str]]) -> Dict[str, str]:
         "at": prop[key]["at"],
         "effects": prop[key]["effects"],
     }
+
 
 def _correct_dict(symbol: Dict[str, Dict[str, str]]) -> Dict[str, str]:
     key = list(symbol.keys())[0]

@@ -3,17 +3,19 @@ from typing import Dict, List
 
 from simp_sexp import Sexp
 
-import pykicad.models.kicad_sch as sch_types
+import pykicad.models.netlist as kicad_netlist
+import pykicad.models.schematic as sch_types
 
 
 def _plural(word: str) -> str:
-    if word in ['xy']:
+    if word in ["xy"]:
         return word
     if word.endswith("s"):
         return word
     if word.endswith("y"):
         return word[:-1] + "ies"
     return word + "s"
+
 
 def _parse_all_strings(sexp: List) -> Dict:
     # If all items are not lists, return them
@@ -91,19 +93,26 @@ def parse_sexp(sexp: List) -> Dict:
             else:
                 result.update(parse_sexp(item))
         return result
+    elif len(sexp[0]) == 2 and isinstance(sexp[1], str):
+        # Fields are structured like this
+        return {sexp[0][1]: sexp[1]}
     raise ValueError("Invalid sexp to parse: ", sexp)
 
 
-def read_in_schematic_from_kicad_sch(file_path: str) -> sch_types.Schematic:
+def read_sexp_from_file(file_path: str) -> Dict:
     with open(file_path, "r") as f:
         content = f.read()
-
     sexp = Sexp(content)
-    parsed = parse_sexp(sexp)
+    return parse_sexp(sexp)
+
+
+def read_in_schematic_from_kicad_sch(file_path: str) -> sch_types.Schematic:
+    parsed = read_sexp_from_file(file_path)
     return sch_types.Schematic(**parsed.get("kicad_sch"))
 
 
-def read_in_schematic_from_string(content: str) -> sch_types.Schematic:
-    sexp = Sexp(content)
-    parsed = parse_sexp(sexp)
-    return sch_types.Schematic(**parsed.get("kicad_sch"))
+def read_in_netlist_from_netlist(file_path: str):
+    """Read and parse a KiCad netlist file"""
+    parsed = read_sexp_from_file(file_path)
+    netlist = parsed.get("export")
+    return kicad_netlist.Netlist(**netlist)

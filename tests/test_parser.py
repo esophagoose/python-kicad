@@ -1,8 +1,8 @@
 import pytest
 
 from pykicad.parser.kicad_sexp import (_normalized_bools, _parse_all_strings,
-                                   _strip_single_element_lists, parse_sexp,
-                                   read_in_schematic_from_kicad_sch)
+                                       _strip_single_element_lists, parse_sexp,
+                                       read_in_schematic_from_kicad_sch)
 
 
 class TestParseAllStrings:

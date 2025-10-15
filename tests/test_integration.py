@@ -2,7 +2,7 @@ import pytest
 
 from pykicad.models.kicad_sch import Schematic
 from pykicad.parser.kicad_sexp import (read_in_schematic_from_kicad_sch,
-                                   read_in_schematic_from_string)
+                                       read_in_schematic_from_string)
 
 
 class TestIntegration:

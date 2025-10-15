@@ -1,7 +1,9 @@
+import argparse
 from parser.kicad_sexp import read_in_schematic_from_kicad_sch
 
-def main():
-    schematic = read_in_schematic_from_kicad_sch("testdata/sample.kicad_sch")
+
+def main(filename: str):
+    schematic = read_in_schematic_from_kicad_sch(filename)
 
     print("\nKiCad Schematic Analysis:")
     print(f"Version: {schematic.version}")
@@ -89,4 +91,9 @@ def main():
 
 
 if __name__ == "__main__":
-    sch = main()
+    parser = argparse.ArgumentParser(
+        description="Parse and display schematic information."
+    )
+    parser.add_argument("filename", type=str, help="Path to the schematic file.")
+    args = parser.parse_args()
+    sch = main(args.filename)

@@ -1,12 +1,12 @@
 import pytest
 
 from pykicad.models.kicad_sch import (Effects, Fill, FillType, Font, FontSize,
-                                       Junction, Justify, Label, LibrarySymbol,
-                                       Pin, PinGraphic, PinType, Point, Points,
-                                       Polyline, Position, Property, Rectangle,
-                                       Schematic, SchematicSymbol, Stroke,
-                                       StrokeType, SymbolUnit, Text,
-                                       TitleBlock, Wire)
+                                      Junction, Justify, Label, LibrarySymbol,
+                                      Pin, PinGraphic, PinType, Point, Points,
+                                      Polyline, Position, Property, Rectangle,
+                                      Schematic, SchematicSymbol, Stroke,
+                                      StrokeType, SymbolUnit, Text, TitleBlock,
+                                      Wire)
 
 
 class TestFont:
